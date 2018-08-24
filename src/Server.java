@@ -1,67 +1,31 @@
-import java.io.*;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Server
- {
+//服务器类
+public class Server {
 
-	public static void main(String args[]) throws IOException {
-		//为了简单起见，所有的异常信息都往外抛
-		int port = 8899;
-		//定义一个ServerSocket监听在端口8899上
-		ServerSocket server = new ServerSocket(port);
+	public static void main(String[] args) throws Exception {
+
+		// 实例化一个list,用于保存所有的User
+		List<User> list = new ArrayList<User>();
+		// 创建绑定到特定端口的服务器套接字
+		@SuppressWarnings("resource")
+            ServerSocket serverSocket = new ServerSocket(9999);
+		System.out.println("服务端正在开始~");
+		// 循环监听客户端连接
 		while (true) {
-			//server尝试接收其他Socket的连接请求，server的accept方法是阻塞式的
-			Socket socket = server.accept();
-			//每接收到一个Socket就建立一个新的线程来处理它
-			new Thread(new Task(socket)).start();
+			Socket socket = serverSocket.accept();
+			// 每接受一个线程，就随机生成一个一个新用户
+			User user = new User("user" + Math.round(Math.random() * 100),socket);
+
+			System.out.println(user.getName() + "正在登录。。。");
+			list.add(user);
+			// 创建一个新的线程，接收信息并转发
+			ServerThread thread = new ServerThread(user, list);
+			thread.start();
 		}
 	}
+    }
 
-	/**
-	 * 用来处理Socket请求的
-	 */
-	static class Task implements Runnable {
-
-		private Socket socket;
-
-		public Task(Socket socket) {
-			this.socket = socket;
-		}
-
-		public void run() {
-			try {
-				handleSocket();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		/**
-		 * 跟客户端Socket进行通信
-		 * @throws Exception
-		 */
-		private void handleSocket() throws Exception {
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			StringBuilder sb = new StringBuilder();
-			String temp;
-			int index;
-			while ((temp=br.readLine()) != null) {
-				System.out.println(temp);
-				if ((index = temp.indexOf("eof")) != -1) {//遇到eof时就结束接收
-					sb.append(temp.substring(0, index));
-					break;
-				}
-				sb.append(temp);
-			}
-			System.out.println("from client: " + sb);
-			//读完后写一句
-			Writer writer = new OutputStreamWriter(socket.getOutputStream());
-			writer.write("Hello Client.");
-			writer.write("eof\n");
-			writer.flush();
-			writer.close();
-			br.close();
-			socket.close();
-		}
-	}
-}

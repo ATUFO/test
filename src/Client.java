@@ -1,41 +1,35 @@
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
-public class Client
- {
+/*
+ *   client线程主要是负责：
+ *   1.发送信息
+ *   2.一直接收信息，并解析
+ * */
+public class Client {
 
-	public static void main(String args[]) throws Exception {
-		//为了简单起见，所有的异常都直接往外抛
-		String host = "127.0.0.1";  //要连接的服务端IP地址
-		int port = 8899;   //要连接的服务端对应的监听端口
-		//与服务端建立连接
-		Socket client = new Socket(host, port);
-		//建立连接后就可以往服务端写数据了
-		Writer writer = new OutputStreamWriter(client.getOutputStream(), "GBK");
-		writer.write("你好，服务端。");
-		writer.write("eof\n");
-		writer.flush();
-		//写完以后进行读操作
-		BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream(), "UTF-8"));
-		//设置超时间为10秒
-		client.setSoTimeout(10*1000);
-		StringBuffer sb = new StringBuffer();
-		String temp;
-		int index;
+	public static void main(String[] args) {
 		try {
-			while ((temp=br.readLine()) != null) {
-				if ((index = temp.indexOf("eof")) != -1) {
-					sb.append(temp.substring(0, index));
-					break;
-				}
-				sb.append(temp);
+			Socket socket = new Socket("localhost", 9999);
+			//开启一个线程接收信息，并解析
+			ClientThread thread=new ClientThread(socket);
+			thread.setName("Client1");
+			thread.start();
+			//主线程用来发送信息
+			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+			PrintWriter out=new PrintWriter(socket.getOutputStream());
+			while(true)
+			{
+				String s=br.readLine();
+				out.println(s);
+				//out.write(s+"\n");
+				out.flush();
 			}
-		} catch (SocketTimeoutException e) {
-			System.out.println("数据读取超时。");
+		}catch(Exception e){
+			System.out.println("服务器异常");
 		}
-		System.out.println("服务端: " + sb);
-		writer.close();
-		br.close();
-		client.close();
 	}
-}
+    }
+
