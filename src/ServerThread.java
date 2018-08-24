@@ -15,10 +15,19 @@ public class ServerThread extends Thread {
 	public ServerThread(User user, List<User> list) {
 		this.user = user;
 		this.list = list;
+		
 	}
 
 	public void run() {
 		try {
+			
+			try {
+				PrintWriter pw =user.getPw();
+				pw.println("登录成功，名称"+user.getName());
+				pw.flush();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			while (true) {
 				// 信息的格式：(login||logout||say),发送人,收发人,信息体
 				//不断地读取客户端发过来的信息

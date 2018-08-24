@@ -12,7 +12,7 @@ public class Client {
 
 	public static void main(String[] args) {
 		try {
-			Socket socket = new Socket("localhost", 9999);
+			Socket socket = new Socket("111.230.141.222", 9999);
 			//开启一个线程接收信息，并解析
 			ClientThread thread=new ClientThread(socket);
 			thread.setName("Client1");
