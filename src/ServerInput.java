@@ -33,7 +33,7 @@ this.list=list;
 
 						case "say":
 
-							sendToClient(str[1], list, str[2]);
+							sendToClient(str[1], list,"FromServer:"+ str[2]);
 
 
 							//out.println("Server:"+str[2]);

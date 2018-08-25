@@ -23,12 +23,14 @@ public class ClientThread extends Thread {
 				// 信息的格式：(login||logout||say),发送人,收发人,信息体
 				while (true) {
 					String msg=br.readLine();
+					if(msg.startsWith("登录")||msg.startsWith("From")){
 					System.out.println(msg);
+					}
+			
 					String[] str = msg.split(",");
 					switch (str[0]) {
 						case "say":
-							System.out.println(str[2] + " 对   " + str[1] + " say:  "
-											   + str[3]);
+							System.out.println("  From  "+str[3]+":"+str[2]);
 							break;
 						default:
 							break;

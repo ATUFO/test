@@ -29,9 +29,10 @@ public class ServerThread extends Thread {
 				e.printStackTrace();
 			}
 			while (true) {
-				// 信息的格式：(login||logout||say),发送人,收发人,信息体
+				// 信息的格式：(login||logout||say),收人,信息体,。。。(发人)
 				//不断地读取客户端发过来的信息
-				String msg= user.getBr().readLine();
+				String msg= user.getBr().readLine()+","+user.getName();
+				if(!msg.startsWith("null,")){
 				System.out.println(msg);
 				String[] str = msg.split(",");
 				switch (str[0]) {
@@ -43,6 +44,7 @@ public class ServerThread extends Thread {
 						break;
 					default:
 						break;
+				}
 				}
 			}
 		} catch (Exception e) {
@@ -59,6 +61,23 @@ public class ServerThread extends Thread {
 
 	private void sendToClient(String username, String msg) {
 
+		
+		if(username.equals("All")){
+
+			for (User user : list) {
+				//if (user.getName().equals(username)) {
+					try {
+						PrintWriter pw =user.getPw();
+						pw.println(msg);
+						pw.flush();
+					} catch (Exception e) {
+						e.printStackTrace();
+					
+				}
+			}
+			
+		}else{
+		
 		for (User user : list) {
 			if (user.getName().equals(username)) {
 				try {
@@ -69,6 +88,7 @@ public class ServerThread extends Thread {
 					e.printStackTrace();
 				}
 			}
+		}
 		}
 	}
 
