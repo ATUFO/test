@@ -27,90 +27,16 @@ public class Server
 			// 创建一个新的线程，接收信息并转发
 			ServerThread thread = new ServerThread(user, list);
 			thread.start();
+            ServerInput si=new ServerInput(list,socket);
+            si.start();
 
 
 
+		
+	}}
 
 
-			BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-			PrintWriter out=new PrintWriter(socket.getOutputStream());
-			while (true)
-			{
-				String s=br.readLine();
-
-				String[] str = s.split(",");
-
-				switch (str[0])
-				{
-
-					case "say":
-					
-							sendToClient(str[1], list, str[2]);
-						
-
-						//out.println("Server:"+str[2]);
-						//out.write(s+"\n");
-						//out.flush();
-						break;
-					default:
-						break;
-
-
-				}
-
-
-
-
-			}
-
-
-
-
-		}
-	}
-
-
-	private static void sendToClient(String username, List list, String msg)
-	{
-		if (username.equals("All"))
-		{
-
-			for (User user : list)
-			{
-				//if (user.getName().equals(username)) {
-				try
-				{
-					PrintWriter pw =user.getPw();
-					pw.println(msg);
-					pw.flush();
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}
-
-
-		}
-		else
-		{
-			for (User user : list)
-			{
-				if (user.getName().equals(username))
-				{
-					try
-					{
-						PrintWriter pw =user.getPw();
-						pw.println(msg);
-						pw.flush();
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-				}
-			}
-
+	
 		}
 
 
@@ -124,6 +50,6 @@ public class Server
 
 
 
-    }
-}
+    
+
 
