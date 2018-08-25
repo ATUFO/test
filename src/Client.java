@@ -23,6 +23,8 @@ public class Client {
 			while(true)
 			{
 				String s=br.readLine();
+				
+				
 				out.println(s);
 				//out.write(s+"\n");
 				out.flush();
